@@ -1,4 +1,6 @@
-NixOS
+# NixOS Crash Course
+- set it and forget it
+![Ron Popeil says Set it and Forget it](https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F33d6e1a2-8b3a-41f0-9430-2758dec0a401_387x405.jpeg)
 -- Are the basics of NixOS the channels, the config and the....
 
 
