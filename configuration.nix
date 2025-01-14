@@ -99,7 +99,6 @@
     wget
     git
     chromium
-    # v4l-utils
     guvcview
     # zoom-us
     # nodejs
