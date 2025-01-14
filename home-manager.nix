@@ -22,9 +22,8 @@
       enable = true;
       package = pkgs.vscodium;
       extensions = with pkgs.vscode-extensions; [
-        bbenoist.nix
-        kamadorueda.alejandra
-        esbenp.prettier-vscode
+        bbenoist.nix # support for Nix language
+        kamadorueda.alejandra # formatting for Nix
       ];
     };
     programs.chromium = {

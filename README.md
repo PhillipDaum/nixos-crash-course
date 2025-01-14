@@ -33,7 +33,7 @@ Nix is a package manager, and NixOS is a Linux distribution built around it. Ins
 ## Getting Started
 
 ### Step 1: Install a Text Editor
-If you’re unfamiliar with Nano keybindings, you can install Vim:
+If you’re unfamiliar with Nano, you can install Vim:
 ```bash
 nix-shell -p vim
 ```
@@ -41,7 +41,7 @@ nix-shell -p vim
 ### Step 2: Change the Hostname
 Update your hostname in `configuration.nix`:
 ```nix
-networking.hostName = "MyCoolHostName";
+networking.hostName = "nebulaNugget";
 ```
 
 Rebuild the system:
@@ -62,6 +62,13 @@ Rebuild the system to apply changes:
 sudo nixos-rebuild switch
 ```
 
+### Step 4: Edit as a normal user
+```bash
+mkdir ~/etc
+sudo mv /etc/nixos ~/etc/
+sudo chown -R $(id -un):users ~/etc/nixos
+sudo ln -s ~/etc/nixos /etc/
+```
 ---
 
 ## Home Manager Setup
@@ -85,7 +92,7 @@ In your `home-manager.nix`, you can add configurations like these:
 
 #### Example Configuration:
 ```nix
-home-manager.users.yourusername = {
+home-manager.users.phil = {
   home.stateVersion = "24.11";
   programs.vscode = {
     enable = true;
@@ -93,7 +100,6 @@ home-manager.users.yourusername = {
     extensions = with pkgs.vscode-extensions; [
       bbenoist.nix
       kamadorueda.alejandra
-      esbenp.prettier-vscode
     ];
   };
   programs.chromium = {
@@ -104,6 +110,8 @@ home-manager.users.yourusername = {
   };
 };
 ```
+The extensions ID is from the URL [Bitwarden](https://chromewebstore.google.com/detail/bitwarden-password-manage/nngceckbapebfimnlniiiahkandclblb)
+
 Rebuild to apply:
 ```bash
 sudo nixos-rebuild switch
@@ -114,7 +122,7 @@ sudo nixos-rebuild switch
 ## Handy Tips
 - Find installed applications:
 ```bash
-find /run/current-system/sw/share/applications
+/run/current-system/sw/share/applications
 ```
 - Check out configuration editors:
 [NixOS Configuration Editors](https://nixos.wiki/wiki/NixOS_configuration_editors)
