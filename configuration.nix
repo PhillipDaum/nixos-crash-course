@@ -28,6 +28,7 @@
   networking.networkmanager.enable = true;
 
   # Hardware Stuff
+  # This is specific to getting my webcam to work on my 2015 MacBook Air
   boot.kernelModules =["w1"];
   boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
   hardware.facetimehd.enable = true;

@@ -20,10 +20,10 @@ If you value consistency and want your configurations to work across machines, N
 
 ## Prerequisites
 Before diving in, ensure you have:
-1. A fresh NixOS installation. If you’re new to NixOS, check out [the official installation guide](https://nixos.org/manual/nixos/stable/#chap-installation) or simply download the ISO from [here](https://nixos.org/download/).
-1.1 **Optional:** A Linux-compatible Wi-Fi adapter like the [Alfa AWUS036ACHM](https://www.amazon.com/AWUS036ACHM-802-11ac-Range-Boost-Adapter/dp/B08SJBV1N3). NixOS requires an internet connection during installation. If you’re unsure whether your Wi-Fi card is supported by the Linux kernel, consider using an adapter.
-1.2 Make sure to allow un-free software during installation unless you’re certain you don’t need it. This typically helps with drivers and hardware compatibility.
-2. A willingness to tinker and learn!
+- A fresh NixOS installation. If you’re new to NixOS, check out [the official installation guide](https://nixos.org/manual/nixos/stable/#chap-installation) or simply download the ISO from [here](https://nixos.org/download/).
+  - **Optional:** A Linux-compatible Wi-Fi adapter like the [Alfa AWUS036ACHM](https://www.amazon.com/AWUS036ACHM-802-11ac-Range-Boost-Adapter/dp/B08SJBV1N3). NixOS requires an internet connection during installation. If you’re unsure whether your Wi-Fi card is supported by the Linux kernel, consider using an adapter.
+  - Make sure to allow un-free software during installation unless you’re certain you don’t need it. This typically helps with drivers and hardware compatibility.
+- A willingness to tinker and learn!
 
 **Note:** Some configurations, like for older MacBooks (e.g., a 2015 MacBook Air), may require additional setup for components like webcams. 
 
