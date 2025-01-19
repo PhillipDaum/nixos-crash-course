@@ -15,6 +15,7 @@
   };
 
   # Home Manager stuff
+  # Thanks to Hoverbear for this: https://hoverbear.org/blog/declarative-gnome-configuration-in-nixos/
   home-manager.users.phil = {
     home.stateVersion = "24.11";
     # programs
@@ -59,6 +60,7 @@
       "org/gnome/desktop/wm/preferences" = {
         button-layout = ":minimize,maximize,close";
       };
+      # These farorite app names are found in: /run/current-system/sw/share/applications 
       "org/gnome/shell" = {
         favorite-apps = [
           "org.gnome.Calendar.desktop"

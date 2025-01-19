@@ -18,81 +18,103 @@ If you value consistency and want your configurations to work across machines, N
 
 ---
 
-## What You’ll Need
-1. A fresh install of NixOS.
-2. **Optional:** A Linux-compatible Wi-Fi adapter like the [Alfa AWUS036ACHM](https://www.amazon.com/AWUS036ACHM-802-11ac-Range-Boost-Adapter/dp/B08SJBV1N3).
-3. A willingness to tinker and learn!
+## Prerequisites
+Before diving in, ensure you have:
+1. A fresh NixOS installation. If you’re new to NixOS, check out [the official installation guide](https://nixos.org/manual/nixos/stable/#chap-installation) or simply download the ISO from [here](https://nixos.org/download/).
+1.1 **Optional:** A Linux-compatible Wi-Fi adapter like the [Alfa AWUS036ACHM](https://www.amazon.com/AWUS036ACHM-802-11ac-Range-Boost-Adapter/dp/B08SJBV1N3). NixOS requires an internet connection during installation. If you’re unsure whether your Wi-Fi card is supported by the Linux kernel, consider using an adapter.
+1.2 Make sure to allow un-free software during installation unless you’re certain you don’t need it. This typically helps with drivers and hardware compatibility.
+2. A willingness to tinker and learn!
+
+**Note:** Some configurations, like for older MacBooks (e.g., a 2015 MacBook Air), may require additional setup for components like webcams. 
 
 ---
 
 ## NixOS Basics
 Nix is a package manager, and NixOS is a Linux distribution built around it. Instead of manually managing configurations, you declare your system’s state in configuration files. Think of it as coding your system into existence.
 
+
+
+Key concepts:
+- **Declarative Configuration**: Define your system in files.
+- **Reproducibility**: Replicate configurations on different machines.
+- **Atomic Upgrades and Rollbacks**: Easily revert changes.
+
 ---
 
-## Getting Started
+## Step-by-Step Guide
 
-### Step 1: Install a Text Editor
-If you’re unfamiliar with Nano, you can install Vim:
+### 1. Install a Text Editor
+For editing configuration files, you’ll need a text editor. If Nano isn’t your preference, install Vim temporarily:
 ```bash
 nix-shell -p vim
 ```
+This creates a temporary shell with Vim, removed after the session ends.
 
-### Step 2: Change the Hostname
-Update your hostname in `configuration.nix`:
+### 2. Change the Hostname
+Set your system’s hostname in `/etc/nixos/configuration.nix`:
 ```nix
 networking.hostName = "nebulaNugget";
 ```
 
-Rebuild the system:
+Test the change:
 ```bash
 sudo nixos-rebuild test
 ```
-
-### Step 3: Add Essential Packages
-Add the following packages to your `configuration.nix` under `environment.systemPackages`:
-```nix
-environment.systemPackages = with pkgs; [
-  vim
-  wget
-];
-```
-Rebuild the system to apply changes:
+Apply it permanently:
 ```bash
 sudo nixos-rebuild switch
 ```
 
-### Step 4: Edit as a normal user
+### 3. Add Essential Packages
+Add packages under `environment.systemPackages` in `configuration.nix`:
+```nix
+environment.systemPackages = with pkgs; [
+  vim
+  wget
+  firefox
+];
+```
+Rebuild your system:
+```bash
+sudo nixos-rebuild switch
+```
+Packages and options are found here. There are loads!:
+- [search.nixos.org](https://search.nixos.org/)
+
+
+### 4. Edit Configurations as a User
+For convenience, move your NixOS configuration directory to your home folder:
 ```bash
 mkdir ~/etc
 sudo mv /etc/nixos ~/etc/
 sudo chown -R $(id -un):users ~/etc/nixos
 sudo ln -s ~/etc/nixos /etc/
 ```
+This lets you edit configurations without switching to root. I recommend initializing this folder as a private repository. This makes management really easy. 
 
-This way you can use your favorite IDE to edit
 ---
 
 ## Home Manager Setup
-Home Manager allows you to manage user-level configurations declaratively. Here’s how to set it up:
+Home Manager allows you to manage user-level configurations declaratively. This method is installing [Home Manager as a NixOS Module](https://nix-community.github.io/home-manager/index.xhtml#sec-install-nixos-module).
 
-### Step 1: Add the Home Manager Channel
-Ensure your Nix channels match the version of your NixOS installation:
+### 1. Add the Home Manager Channel
+Add the Home Manager channel matching your NixOS version:
 ```bash
-nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz home-manager
-nix-channel --update
+sudo nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz home-manager
+sudo nix-channel --update
 ```
+Learn more about channels [here](https://nixos.org/manual/nixos/stable/#sec-channels).
 
-### Step 2: Import Home Manager into `configuration.nix`
-Add this line to your imports:
+### 2. Enable Home Manager in `configuration.nix`
+Add the Home Manager module to imports:
 ```nix
-<home-manager/nixos>
+imports = [
+  <home-manager/nixos>
+];
 ```
 
-### Step 3: Configure Home Manager
-In your `home-manager.nix`, you can add configurations like these:
-
-#### Example Configuration:
+### 3. Configure Home Manager
+Define user-specific configurations:
 ```nix
 home-manager.users.phil = {
   home.stateVersion = "24.11";
@@ -112,35 +134,48 @@ home-manager.users.phil = {
   };
 };
 ```
-The extensions ID is from the URL [Bitwarden](https://chromewebstore.google.com/detail/bitwarden-password-manage/nngceckbapebfimnlniiiahkandclblb)
+The VSCode extensions are from [search.nixos.org](https://search.nixos.org/), The Chrome extensions are the code at the end of it's url, like this for Bitwarden [nngceckbapebfimnlniiiahkandclblb](https://chromewebstore.google.com/detail/bitwarden-password-manage/nngceckbapebfimnlniiiahkandclblb) 
 
-Rebuild to apply:
+Apply changes:
 ```bash
 sudo nixos-rebuild switch
 ```
 
 ---
 
-## Handy Tips
-- Find installed applications:
+## Maintenance Tips
+
+### Updating Channels and Packages
+Keep your system up to date:
 ```bash
-/run/current-system/sw/share/applications
+sudo nix-channel --update
+sudo nixos-rebuild switch --upgrade
 ```
-- Check out configuration editors:
-[NixOS Configuration Editors](https://nixos.wiki/wiki/NixOS_configuration_editors)
+
+### Garbage Collection
+Remove unused packages and generations:
+```bash
+sudo nix-collect-garbage -d
+```
+Learn more [here](https://nix.dev/manual/nix/2.24/package-management/garbage-collection.html).
+
+### Rollbacks
+If a configuration causes issues, revert to a previous generation via GRUB or:
+```bash
+sudo nix-env --rollback
+```
 
 ---
 
-## Debugging and FAQs
-### Why use `sudo nixos-rebuild test`?
-- This command applies changes without committing them, so you can validate your configuration.
-
-### When do I need to reboot?
-- Only if critical system components (like the kernel) are updated. For most changes, a rebuild suffices.
+## Resources
+- **Official Documentation**: [NixOS Manual](https://nixos.org/manual/nixos/stable/)
+- **Community Wiki**: [NixOS Wiki](https://nixos.wiki/)
+- **Support**: Join the [NixOS Discourse](https://discourse.nixos.org/) or [Matrix chat](https://matrix.to/#/#nixos:matrix.org).
 
 ---
 
 ## Conclusion
-By the end of this walkthrough, you’ll have a fully functional, customized NixOS installation. Remember, NixOS is about learning and experimenting. Once you grasp the basics, you’ll wonder how you ever lived without it.
+With this guide, you’re well on your way to mastering NixOS. Its declarative, reproducible approach can transform how you manage systems. Experiment, learn, and enjoy the journey!
 
-Now, let’s set it and forget it—until the next great idea strikes!
+Happy hacking!
+
