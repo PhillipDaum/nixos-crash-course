@@ -134,7 +134,7 @@ home-manager.users.phil = {
   };
 };
 ```
-The VSCode extensions are from [search.nixos.org](https://search.nixos.org/), The Chrome extensions are the code at the end of it's url, like this for Bitwarden [nngceckbapebfimnlniiiahkandclblb](https://chromewebstore.google.com/detail/bitwarden-password-manage/nngceckbapebfimnlniiiahkandclblb) 
+The VSCode extensions are from [search.nixos.org](https://search.nixos.org/), The Chrome extensions are the code at the end of its URL, like this for Bitwarden: [nngceckbapebfimnlniiiahkandclblb](https://chromewebstore.google.com/detail/bitwarden-password-manage/nngceckbapebfimnlniiiahkandclblb) 
 
 Apply changes:
 ```bash
