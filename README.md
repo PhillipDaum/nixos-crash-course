@@ -1,112 +1,129 @@
 # NixOS Crash Course
+
 ![Ron Popeil says Set it and Forget it](https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F33d6e1a2-8b3a-41f0-9430-2758dec0a401_387x405.jpeg)
 
 ## Introduction
-Welcome to the NixOS Crash Course! Think of this as the Ron Popeil approach to Linux: "Set it and forget it." While NixOS may have a steeper learning curve than other distributions, it rewards you with unparalleled reproducibility and flexibility.
+Welcome to the NixOS Crash Course! I thought of Ron Popeil when I was making this guide. It took me a while to get the hang of it, but now I can mostly just "Set it and forget it."
+
+NixOS has a steeper learning curve than other distributions for most users, but it rewards you with unparalleled reproducibility and flexibility.
 
 This guide will walk you through setting up NixOS from a fresh install, customizing it with packages, and leveraging Home Manager for user-level configuration. Let’s get started!
 
----
+## Links
+- [Slide Deck](https://www.canva.com/design/DAGmPNYx3E4/TJy0gF8NFPLeJAl6ubdRNQ/edit?utm_content=DAGmPNYx3E4&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+- [NixOS.org](https://nixos.org/)
+- [Nix Packages and Options](https://search.nixos.org/packages)
 
 ## Who Uses NixOS?
 NixOS is popular among:
+
 - **Developers and DevOps Engineers** who love reproducible builds and deployments.
 - **Linux Enthusiasts** who enjoy tweaking and customizing their setups.
 - **System Administrators** looking for a declarative approach to configuration.
 
 If you value consistency and want your configurations to work across machines, NixOS might be for you!
 
----
-
 ## Prerequisites
 Before diving in, ensure you have:
+
 - A fresh NixOS installation. If you’re new to NixOS, check out [the official installation guide](https://nixos.org/manual/nixos/stable/#chap-installation) or simply download the ISO from [here](https://nixos.org/download/).
   - **Optional:** A Linux-compatible Wi-Fi adapter like the [Alfa AWUS036ACHM](https://www.amazon.com/AWUS036ACHM-802-11ac-Range-Boost-Adapter/dp/B08SJBV1N3). NixOS requires an internet connection during installation. If you’re unsure whether your Wi-Fi card is supported by the Linux kernel, consider using an adapter.
   - Make sure to allow un-free software during installation unless you’re certain you don’t need it. This typically helps with drivers and hardware compatibility.
 - A willingness to tinker and learn!
 
-**Note:** Some configurations, like for older MacBooks (e.g., a 2015 MacBook Air), may require additional setup for components like webcams. 
-
----
+**Note:** Some configurations, like for older MacBooks (e.g., a 2015 MacBook Air), may require additional setup for components like webcams.
 
 ## NixOS Basics
 Nix is a package manager, and NixOS is a Linux distribution built around it. Instead of manually managing configurations, you declare your system’s state in configuration files. Think of it as coding your system into existence.
-
-
 
 Key concepts:
 - **Declarative Configuration**: Define your system in files.
 - **Reproducibility**: Replicate configurations on different machines.
 - **Atomic Upgrades and Rollbacks**: Easily revert changes.
 
----
-
 ## Step-by-Step Guide
 
 ### 1. Install a Text Editor
 For editing configuration files, you’ll need a text editor. If Nano isn’t your preference, install Vim temporarily:
+
 ```bash
 nix-shell -p vim
 ```
+
 This creates a temporary shell with Vim, removed after the session ends.
 
 ### 2. Change the Hostname
 Set your system’s hostname in `/etc/nixos/configuration.nix`:
+
 ```nix
 networking.hostName = "nebulaNugget";
 ```
 
 Test the change:
+
 ```bash
 sudo nixos-rebuild test
 ```
+
 Apply it permanently:
+
 ```bash
 sudo nixos-rebuild switch
 ```
 
 ### 3. Add Essential Packages
+
 Add packages under `environment.systemPackages` in `configuration.nix`:
+
 ```nix
 environment.systemPackages = with pkgs; [
   vim
-  wget
   firefox
+  chromium
+  guvcview
+  vscodium
 ];
 ```
+
 Rebuild your system:
+
 ```bash
 sudo nixos-rebuild switch
 ```
+
 Packages and options are found here. There are loads!:
+
 - [search.nixos.org](https://search.nixos.org/)
 
-
 ### 4. Edit Configurations as a User
-For convenience, move your NixOS configuration directory to your home folder:
+For convenience, move your NixOS configuration directory to your home folder and symlink it to `/etc`:
+
 ```bash
 mkdir ~/etc
 sudo mv /etc/nixos ~/etc/
 sudo chown -R $(id -un):users ~/etc/nixos
 sudo ln -s ~/etc/nixos /etc/
 ```
-This lets you edit configurations without switching to root. I recommend initializing this folder as a private repository. This makes management really easy. 
 
----
+This lets you edit configurations without switching to root. I recommend initializing this folder as a private repository. This makes management really easy.
+
 
 ## Home Manager Setup
 Home Manager allows you to manage user-level configurations declaratively. This method is installing [Home Manager as a NixOS Module](https://nix-community.github.io/home-manager/index.xhtml#sec-install-nixos-module).
 
 ### 1. Add the Home Manager Channel
 Add the Home Manager channel matching your NixOS version:
+
 ```bash
 sudo nix-channel --add https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz home-manager
 sudo nix-channel --update
 ```
+
 Learn more about channels [here](https://nixos.org/manual/nixos/stable/#sec-channels).
 
 ### 2. Enable Home Manager in `configuration.nix`
 Add the Home Manager module to imports:
+
 ```nix
 imports = [
   <home-manager/nixos>
@@ -114,10 +131,34 @@ imports = [
 ```
 
 ### 3. Configure Home Manager
+Create a home-manager.nix file in the same location `~/etc/nixos`. I like to define my user account here as well:
+```nix
+# This is your home-manager configuration file
+{
+  config,
+  pkgs,
+  ...
+} : {
+  # Define a user account. you can set password with ‘passwd’.
+  users.users.phil = {
+    isNormalUser = true;
+    description = "phil";
+    extraGroups = ["networkmanager" "wheel"];
+    packages = with pkgs; [
+      gnomeExtensions.dock-from-dash
+    ];
+  };
+
+  # put everything here!
+
+}
+```
+
 Define user-specific configurations:
 ```nix
 home-manager.users.phil = {
   home.stateVersion = "24.11";
+  # add extensions to VS Codium
   programs.vscode = {
     enable = true;
     package = pkgs.vscodium;
@@ -126,6 +167,7 @@ home-manager.users.phil = {
       kamadorueda.alejandra
     ];
   };
+  # add extensions to Chromium
   programs.chromium = {
     enable = true;
     extensions = [
@@ -134,33 +176,101 @@ home-manager.users.phil = {
   };
 };
 ```
-The VSCode extensions are from [search.nixos.org](https://search.nixos.org/), The Chrome extensions are the code at the end of its URL, like this for Bitwarden: [nngceckbapebfimnlniiiahkandclblb](https://chromewebstore.google.com/detail/bitwarden-password-manage/nngceckbapebfimnlniiiahkandclblb) 
+
+The VSCode extensions are from [search.nixos.org](https://search.nixos.org/), The Chrome extensions are the code at the end of its URL, like this for Bitwarden: [nngceckbapebfimnlniiiahkandclblb](https://chromewebstore.google.com/detail/bitwarden-password-manage/nngceckbapebfimnlniiiahkandclblb)
+
+Now let's get our desktop environment looking crispy. We can add this inside the curly braces for `home-manager.users.phil`:
+
+```nix
+    # Desktop stuff
+    gtk = {
+      enable = true;
+      iconTheme = {
+        name = "BeautyLine";
+        package = pkgs.beauty-line-icon-theme;
+      };
+      # almost all apps show up with dark styling, but not all.
+      gtk3.extraConfig = {
+        Settings = ''
+          gtk-application-prefer-dark-theme=1
+        '';
+      };
+      gtk4.extraConfig = {
+        Settings = ''
+          gtk-application-prefer-dark-theme=1
+        '';
+      };
+    };
+    dconf.settings = {
+      "org/gnome/desktop/interface" = {
+        color-scheme = "prefer-dark";
+      };
+      "org/gnome/desktop/wm/preferences" = {
+        button-layout = ":minimize,maximize,close";
+      };
+      # These farorite app names are found in: /run/current-system/sw/share/applications 
+      "org/gnome/shell" = {
+        favorite-apps = [
+          "org.gnome.Calendar.desktop"
+          "org.gnome.Nautilus.desktop"
+          "org.gnome.Console.desktop"
+          "chromium-browser.desktop"
+          "codium.desktop"
+          "guvcview.desktop"
+        ];
+        disable-user-extensions = false;
+        # `gnome-extensions list` for a list
+        enabled-extensions = [
+          "dock-from-dash@fthx" # package is declared in users.users.phil.packages
+        ];
+      };
+    };
+```
 
 Apply changes:
+
 ```bash
 sudo nixos-rebuild switch
 ```
 
----
+## getting the Macbook Air 2015 camera working
+Add this to `configuration.nix` to get reverse engineered drivers working for the Facetime camera!
+
+```bash
+  # Hardware Stuff
+  # This is specific to getting my webcam to work on my 2015 MacBook Air
+  boot.kernelModules =["w1"];
+  boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
+  hardware.facetimehd.enable = true;
+  hardware.facetimehd.withCalibration = true;
+```
+
 
 ## Maintenance Tips
 
 ### Updating Channels and Packages
+
 Keep your system up to date:
+
 ```bash
 sudo nix-channel --update
 sudo nixos-rebuild switch --upgrade
 ```
 
 ### Garbage Collection
+
 Remove unused packages and generations:
+
 ```bash
 sudo nix-collect-garbage -d
 ```
+
 Learn more [here](https://nix.dev/manual/nix/2.24/package-management/garbage-collection.html).
 
 ### Rollbacks
+
 If a configuration causes issues, revert to a previous generation via GRUB or:
+
 ```bash
 sudo nix-env --rollback
 ```
@@ -168,6 +278,7 @@ sudo nix-env --rollback
 ---
 
 ## Resources
+
 - **Official Documentation**: [NixOS Manual](https://nixos.org/manual/nixos/stable/)
 - **Community Wiki**: [NixOS Wiki](https://nixos.wiki/)
 - **Support**: Join the [NixOS Discourse](https://discourse.nixos.org/) or [Matrix chat](https://matrix.to/#/#nixos:matrix.org).
@@ -175,7 +286,7 @@ sudo nix-env --rollback
 ---
 
 ## Conclusion
+
 With this guide, you’re well on your way to mastering NixOS. Its declarative, reproducible approach can transform how you manage systems. Experiment, learn, and enjoy the journey!
 
 Happy hacking!
-

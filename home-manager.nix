@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: {
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Define a user account. you can set password with ‘passwd’.
   users.users.phil = {
     isNormalUser = true;
     description = "phil";
