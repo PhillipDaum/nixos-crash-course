@@ -5,9 +5,7 @@
 ## Introduction
 Welcome to the NixOS Crash Course! I thought of Ron Popeil when I was making this guide. It took me a while to get the hang of it, but now I can mostly just "Set it and forget it."
 
-NixOS has a steeper learning curve than other distributions for most users, but it rewards you with unparalleled reproducibility and flexibility.
-
-This guide will walk you through setting up NixOS from a fresh install, customizing it with packages, and leveraging Home Manager for user-level configuration. Let’s get started!
+With NixOS, one could just copy and paste the files in this repository and run a few commands and have the whole system built. However, this will chunk it down step by step.
 
 ## Links
 - [Slide Deck](https://www.canva.com/design/DAGmPNYx3E4/TJy0gF8NFPLeJAl6ubdRNQ/edit?utm_content=DAGmPNYx3E4&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
@@ -16,7 +14,6 @@ This guide will walk you through setting up NixOS from a fresh install, customiz
 
 ## Who Uses NixOS?
 NixOS is popular among:
-
 - **Developers and DevOps Engineers** who love reproducible builds and deployments.
 - **Linux Enthusiasts** who enjoy tweaking and customizing their setups.
 - **System Administrators** looking for a declarative approach to configuration.
